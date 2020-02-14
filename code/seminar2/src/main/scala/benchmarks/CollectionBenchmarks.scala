@@ -15,7 +15,7 @@ class CollectionBenchmarks {
   def listAppend(scope: BenchmarkState) = scope.randomList :+ 1
 
   @Benchmark
-  def listPrepend(scope: BenchmarkState) = 1 +: scope.randomList
+  def listPrepend(scope: BenchmarkState) = 1 +: sbpcope.randomList
 }
 
 @State(Scope.Benchmark)
