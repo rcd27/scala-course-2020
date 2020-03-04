@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>Домашнее задание: клиент к vk.com</title>
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/moon.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				<section>
+					<h2>Домашнее задание: клиент к vk.com</h2>
+					<p><small>Страничка курса: <a href="https://maxcom.github.io/scala-course-2020/">https://maxcom.github.io/scala-course-2020/</small></a>
+				</section>
+
+				<section>
+					<p>План задания
+					<ol>
+						<li>Классификатор текстов
+						<li>Reads для vk.com (только reads! writes не нужно)
+						<li>Стемминг и диагностика<br>-------- мы находимся здесь -------
+						<li>Получаем сообщения API vk.com
+						<li>Сервис категоризации
+						<li>Опрос новых записей и хранение состояния на диске
+						<li>Realtime обновление
+					</ol>
+				</section>
+
+				<section>
+					<h3>HTTP клиент в Play Framework</h3>
+				</section>
+
+				<section>
+					<p>Подключаем HTTP Client: build.sbt
+					<pre><code class="scala">
+libraryDependencies += "com.typesafe.play" %% 
+                        "play-ahc-ws-standalone" % "2.1.2"
+libraryDependencies += "com.typesafe.play" %% 
+                        "play-ws-standalone-json" % "2.1.2"
+					</code></pre>
+				</section>
+
+				<section>
+					<p>Инициализация
+					<pre><code class="scala">import akka.actor.ActorSystem
+import play.api.libs.ws.ahc.StandaloneAhcWSClient
+import scala.concurrent.ExecutionContext.Implicits._
+import play.api.libs.ws.DefaultBodyReadables._
+
+object Demo extends App {
+  implicit val system: ActorSystem = ActorSystem()
+
+  val wsClient = StandaloneAhcWSClient()
+
+  wsClient.url("https://api.vk.com").get().map { response =&gt;
+    val body = response.body[String]
+    println(s"Got a response $body")
+  }
+}</code></pre>
+				</section>
+
+				<section>
+					<p><a target="_blank" href="https://github.com/playframework/play-ws">Документация</a>.
+					<p><a target="_blank" href="https://www.playframework.com/documentation/2.8.x/ScalaWS">Документации Play</a>.
+				</section>
+
+				<section>
+					<h3>Обращаемся к API vk.com</h3>
+				</section>
+
+				<section>
+					<p>Нет логина на vk.com?<br>заведите
+				</section>
+
+				<section>
+					<p>Предварительные шаги:
+					<ul>
+						<li>Создаем новое приложение на vk.com
+						<li>Включаем приложение
+						<li>Запрашиваем access_token с нужными правами
+					</ul>
+				</section>
+
+				<section>
+					<p>Смотрим документацию:<br>
+					<a target="_blank" href="https://vk.com/dev/first_guide">Знакомство с API ВКонтакте</a>
+				</section>
+
+				<section>
+					<p>Какие нужны права:
+					<ul>
+						<li>wall,friends - доступ к ленте новостей
+						<li>offline - без ограничений по времени
+					</ul>
+				</section>
+
+				<section>
+					<p>Пример URL:
+
+					<pre><code class="html">
+https://oauth.vk.com/authorize?client_id=NNNNN&amp;display=page&amp;redirect_uri=https://oauth.vk.com/blank.html&amp;scope=wall,friends,offline&amp;response_type=token&amp;v=5.52
+					</code></pre>
+				</section>
+
+				<section>
+					<p>не дает token - перелогиньтесь
+				</section>
+
+				<section>
+					<p>Задача: вывести newsfeed в человеко-читаемом виде (не json!)
+				</section>
+
+				<section>
+					<p>access_token не выкладывайте на gitlab!
+				</section>
+
+				<section>
+					<p>Напоминаю:
+					<ul>
+						<li>Страничка курса: <a href="https://maxcom.github.io/scala-course-2020/">https://maxcom.github.io/scala-course-2020/</a>
+					</ul>
+				</section>
+
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info about config & dependencies:
+			// - https://github.com/hakimel/reveal.js#configuration
+			// - https://github.com/hakimel/reveal.js#dependencies
+			Reveal.initialize({
+                                controls: true,
+                                progress: true,
+                                history: true,
+                                center: true,
+
+                                transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+				]
+			});
+		</script>
+
+	</body>
+</html>
